@@ -11,7 +11,7 @@ class BillboardCrawler:
     '''Takes info outputted from scrapeInfo(). Place the scraped info into a data frame.'''
 
     def buildBillboard(self, data: list) -> pd.DataFrame:
-        cols=["song","rank", "artist","last_week","peak_position","weeks_on_chart","saturday"]
+        cols=["song", "rank", "artist", "last_week","peak_position", "weeks_on_chart",  "saturday"]
         billboard = pd.DataFrame(data, columns=cols)
         self.data = billboard
     
@@ -26,7 +26,16 @@ class BillboardCrawler:
         # Scrape rank information, also artist name
         rankElements = self.driver.find_elements(By.CLASS_NAME, "c-label")
         exclude = {'NEW','RE- ENTRY', ''}
-        rankInfo = [a.text for a in rankElements if a.text not in exclude][3:]     # First 3 elements are not needed, cut them off
+        rankInfo = [a.text for a in rankElements if a.text not in exclude]
+        
+        # Check if "New this week!" is on the web page.
+        # A boolean flag that controls number of elements to exclude
+        elements = self.driver.find_elements(By.CLASS_NAME, "c-tagline")
+        elements = [b.text for b in elements]
+        if "New this week!" in elements:
+            rankInfo = rankInfo[0:]
+        else:
+            rankInfo = rankInfo[3:]     # First 3 elements are not needed, cut them off
         
         # Scrape song titles
         y = self.driver.find_elements(By.ID, "title-of-a-story")
@@ -36,7 +45,11 @@ class BillboardCrawler:
         res = []
         i,j = 0,0
         while j < len(songTitles):
-            res.append(songTitles[j] + rankInfo[i:i+5] + [dateStr])
+            newRecord = songTitles[j] + rankInfo[i:i+5] + [dateStr]
+            if len(newRecord) != 7:  # Ran out of records for the given timeframe
+                newRecord.extend((7-len(newRecord))*[None]) # pad with None
+                break
+            res.append(newRecord)
             j+=1
             i+=5
             
