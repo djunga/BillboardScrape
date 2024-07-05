@@ -21,14 +21,14 @@ liveness_data <- read.csv("https://raw.githubusercontent.com/djunga/BillboardScr
 tempo_data <- read.csv("https://raw.githubusercontent.com/djunga/BillboardScrape/main/tempo_calendar.csv")
 
 calendar_data_choices <- list(
-  energy = energy_data
-  # "valence" = valence_data,
-  # "loudness" = loudness_data,
-  # "speechiness" = speechiness_data,
-  # "acousticness" = acousticness_data,
-  # "instrumentalness" = instrumentalness_data,
-  # "liveness" = liveness_data,
-  # "tempo" = tempo_data
+  energy = energy_data,
+  valence = valence_data,
+  loudness = loudness_data,
+  speechiness = speechiness_data,
+  acousticness = acousticness_data,
+  instrumentalness = instrumentalness_data,
+  liveness = liveness_data,
+  tempo = tempo_data
 )
 
 
@@ -43,47 +43,39 @@ metric_choices <- list(
   tempo = c("avg_tempo", tempo_data)
 )
 
-
-get_choice <- function(item_name) {
-  metric_choices[[item_name]][1]
-}
-
-get_data <- function(item_name) {
-  metric_choices[[item_name]][2]
-}
-
 # Define UI
-# ui <- page_sidebar(
-#   title = "Billboard - Spotify Audio Features Dashboard", 
-#   
-#   # Dropdown box for selecting a choice
-#   selectInput("selected_feature", "Select variable for Y-axis:",
-#               choices = names(calendar_data_choices), 
-#               selected = names(calendar_data_choices)[1]),
-# 
-#   
-#   navset_card_tab(
-#     nav_panel("Features Scatterplot", plotOutput("scatterPlot")),
-#     nav_panel("Calendar", plotOutput("heatmap"))
-#   ),
-# )
+ui <- page_sidebar(
+  title = "Billboard - Spotify Audio Features Dashboard",
 
-ui <- fluidPage(
-  titlePanel = "Billboard - Spotify Audio Features Dashboard", 
-  sidebarLayout(
-    sidebarPanel(
     # Dropdown box for selecting a choice
-    selectInput("selected_feature", "Select variable for Y-axis:",
-                choices = names(calendar_data_choices), 
-                selected = names(calendar_data_choices)[1]),
-  
-    ),
+    sidebar = sidebar(
+                selectInput("selected_feature", "Select variable for Y-axis:",
+                choices = names(calendar_data_choices),
+                selected = names(calendar_data_choices)[1])
+                ),
+
   navset_card_tab(
     nav_panel("Features Scatterplot", plotOutput("scatterPlot")),
     nav_panel("Calendar", plotOutput("heatmap"))
   ),
-  ),
 )
+
+# ui <- fluidPage(
+#   titlePanel = "Billboard - Spotify Audio Features Dashboard", 
+#   sidebarLayout(
+#     sidebarPanel(
+#     # Dropdown box for selecting a choice
+#     selectInput("selected_feature", "Select variable for Y-axis:",
+#                 choices = names(calendar_data_choices), 
+#                 selected = names(calendar_data_choices)[1]),
+#   
+#     ),
+#   navset_card_tab(
+#     nav_panel("Features Scatterplot", plotOutput("scatterPlot")),
+#     nav_panel("Calendar", plotOutput("heatmap"))
+#   ),
+#   ),
+# )
 
 
 
