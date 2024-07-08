@@ -5,8 +5,6 @@ library(tidyverse)   # lubridate included
 library(ragg)
 library(showtext)
 
-#setwd("C:/Users/pebbl/Desktop/Shiny R Practice/MyShinyWebApp")
-
 trend_data <- read.csv("https://raw.githubusercontent.com/djunga/BillboardScrape/main/avg_trends.csv")
 trend_data <- trend_data %>%
   mutate(month = factor(month, levels = month.name))
@@ -84,7 +82,8 @@ ui <- page_sidebar(
 
   navset_card_tab(
     nav_panel("Features Scatterplot", plotOutput("scatterPlot")),
-    nav_panel("Calendar Heatmap", plotOutput("heatmap"))
+    nav_panel("Calendar Heatmap", plotOutput("heatmap")),
+    full_screen= TRUE
   ),
   tags$head(
     tags$style(HTML(custom_css))
@@ -96,6 +95,7 @@ ui <- page_sidebar(
 pubu <- RColorBrewer::brewer.pal(9, "BuPu")
 col_p <- colorRampPalette(pubu)
 
+# Source: https://dominicroye.github.io/en/2020/a-heatmap-as-calendar/
 theme_calendar <- function(){
   
   f = "sans"
@@ -105,7 +105,7 @@ theme_calendar <- function(){
         axis.title = element_blank(),
         axis.ticks = element_blank(),
         axis.text.y = element_blank(),
-        axis.text = element_text(family = f),
+        axis.text = element_text(family = f, angle=45),
         
         panel.grid = element_blank(),
         panel.background = element_blank(),
@@ -160,7 +160,7 @@ server <- function(input, output) {
       scale_colour_manual(values = c("black", "white"), guide = FALSE) + 
       facet_wrap(~month, nrow = 4, ncol = 3, scales = "free") +
       labs(title = paste0("Average ", stringr::str_to_title(selected_col), " Per Week"), 
-           subtitle = "Billboard 100, 2023",
+           subtitle = "Billboard Hot 100™, 2023",
            caption = "Data: Spotify Developer API",
            fill = paste0("avg ", selected_col)) +
       theme_calendar()
